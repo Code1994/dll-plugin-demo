@@ -2,7 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-// const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 const config = {
@@ -21,11 +21,20 @@ const config = {
     filename: 'js/[name].[chunkhash:6].js'
   },
   plugins: [
-    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '../index.html')
     }),
-    // new webpack.DllPlugin()
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../static'),
+        to: path.resolve(__dirname, '../dist/static')
+      }
+    ]),
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require('./dll/vendor.manifest.json')
+    }),
+    new CleanWebpackPlugin(),
   ]
 }
 
